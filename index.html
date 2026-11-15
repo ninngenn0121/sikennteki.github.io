@@ -2,229 +2,113 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>いたずらステルス 3号</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-  body { background: #12121e; color: #fff; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; overflow: hidden; touch-action: manipulation; }
-  #box { width: 95vw; max-width: 400px; background: #1a1a2e; border: 2px solid #2e2e52; border-radius: 16px; padding: 16px; text-align: center; position: relative; }
-  .shake { animation: shake 0.3s both; }
-  @keyframes shake { 20%, 60% { transform: translateX(-6px); } 40%, 80% { transform: translateX(6px); } }
-  #top { display: flex; justify-content: space-between; font-weight: bold; background: #0f0f1a; padding: 10px 14px; border-radius: 10px; margin-bottom: 12px; font-size: 15px; }
-  .cyan { color: #00ffcc; font-size: 18px; }
-  .gold { color: #ffcc00; font-size: 18px; }
-  #stage { height: 245px; background: #0f172a; border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; margin-bottom: 14px; border: 1px solid #2d3b5e; }
-  #bonus { position: absolute; top: 8px; font-size: 14px; font-weight: bold; color: #ffdd00; opacity: 0; transition: 0.2s; }
-  #alert { font-size: 38px; height: 44px; line-height: 1; }
-  #arena { display: flex; align-items: center; justify-content: space-around; width: 100%; padding: 0 10px; }
-  .crowd { font-size: 42px; opacity: 0; transition: transform 0.15s; display: flex; flex-direction: column; align-items: center; }
-  .crowd span { font-size: 11px; margin-top: 2px; font-weight: bold; }
-  #face { position: relative; width: 100px; height: 100px; display: flex; align-items: center; justify-content: center; }
-  #target { font-size: 82px; line-height: 1; }
-  .doodle { position: absolute; font-size: 22px; font-weight: bold; opacity: 0; transition: opacity 0.2s; pointer-events: none; }
-  #msg { margin-top: 8px; font-size: 14px; font-weight: bold; height: 20px; }
-  #bar-wrap { width: 100%; height: 22px; background: #0a0a12; border-radius: 11px; overflow: hidden; margin-bottom: 14px; border: 1px solid #333; position: relative; }
-  #bar { width: 0%; height: 100%; background: linear-gradient(90deg, #00b4d8, #00ffcc); }
-  #bar-txt { position: absolute; inset: 0; font-size: 12px; font-weight: bold; line-height: 20px; text-shadow: 0 1px 2px #000; }
-  #btn { width: 100%; padding: 18px; font-size: 20px; font-weight: bold; background: #e94560; color: #fff; border: none; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 0 #8a1128; }
-  #btn:active, #btn.on { transform: translateY(3px); box-shadow: 0 1px 0 #8a1128; background: #ff2a55; }
-  #ov { position: absolute; inset: 0; background: rgba(12,12,22,0.95); border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
-  #ov h2 { font-size: 23px; color: #00ffcc; margin-bottom: 10px; }
-  #ov p { font-size: 14px; color: #ccc; margin-bottom: 20px; line-height: 1.5; }
-  #start { padding: 14px 28px; font-size: 18px; font-weight: bold; background: #00ffcc; color: #000; border: none; border-radius: 10px; cursor: pointer; width: 100%; }
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none}
+body{background:#12121e;color:#fff;font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;overflow:hidden;touch-action:manipulation}
+#box{width:95vw;max-width:400px;background:#1a1a2e;border:2px solid #2e2e52;border-radius:16px;padding:16px;text-align:center;position:relative}
+.shake{animation:shk .3s both}@keyframes shk{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+#top{display:flex;justify-content:space-between;font-weight:bold;background:#0f0f1a;padding:10px 14px;border-radius:10px;margin-bottom:12px;font-size:15px}
+.c{color:#00ffcc;font-size:18px}.g{color:#ffcc00;font-size:18px}
+#stg-box{height:240px;background:#0f172a;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;margin-bottom:14px;border:1px solid #2d3b5e}
+#pop{position:absolute;top:8px;font-size:14px;font-weight:bold;color:#ffdd00;opacity:0;transition:.2s}
+#alt{font-size:38px;height:44px;line-height:1}
+#arn{display:flex;align-items:center;justify-content:space-around;width:100%;padding:0 8px}
+.crd{font-size:40px;opacity:0;display:flex;flex-direction:column;align-items:center}
+.crd span{font-size:11px;margin-top:2px;font-weight:bold}
+#face{position:relative;width:100px;height:100px;display:flex;align-items:center;justify-content:center}
+#tgt{font-size:82px;line-height:1}
+.ddl{position:absolute;font-size:22px;font-weight:bold;opacity:0;transition:opacity .2s;pointer-events:none}
+#msg{margin-top:8px;font-size:14px;font-weight:bold;height:20px}
+#bw{width:100%;height:22px;background:#0a0a12;border-radius:11px;overflow:hidden;margin-bottom:14px;border:1px solid #333;position:relative}
+#bar{width:0%;height:100%;background:linear-gradient(90deg,#00b4d8,#00ffcc)}
+#bt{position:absolute;inset:0;font-size:12px;font-weight:bold;line-height:20px;text-shadow:0 1px 2px #000}
+#btn{width:100%;padding:18px;font-size:20px;font-weight:bold;background:#e94560;color:#fff;border:none;border-radius:12px;cursor:pointer;box-shadow:0 4px 0 #8a1128}
+#btn:active,#btn.on{transform:translateY(3px);box-shadow:0 1px 0 #8a1128;background:#ff2a55}
+#ov{position:absolute;inset:0;background:rgba(12,12,22,.95);border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;z-index:10}
+#ov h2{font-size:23px;color:#00ffcc;margin-bottom:10px}#ov p{font-size:14px;color:#ccc;margin-bottom:20px;line-height:1.5}
+#go{padding:14px 28px;font-size:18px;font-weight:bold;background:#00ffcc;color:#000;border:none;border-radius:10px;cursor:pointer;width:100%}
 </style>
 </head>
 <body>
 <div id="box">
-  <div id="top">
-    <div>LV.<span id="stg" class="cyan">1</span></div>
-    <div>TIME <span id="tm" class="gold">16.0</span></div>
-    <div>SCORE <span id="sc" class="cyan">0</span></div>
-  </div>
-  <div id="stage">
-    <div id="bonus">ギリギリ回避！</div>
-    <div id="alert"></div>
-    <div id="arena">
-      <div class="crowd" id="cL"><div>📱</div><span>よそ見</span></div>
-      <div id="face">
-        <div id="target">😴</div>
-        <span class="doodle" id="d1" style="top:14px;left:38px;color:#ff0055">肉</span>
-        <span class="doodle" id="d2" style="top:42px;left:18px">👓</span>
-        <span class="doodle" id="d3" style="top:62px;left:35px">〰️</span>
-        <span class="doodle" id="d4" style="top:28px;right:14px">🌀</span>
+  <div id="top"><div>LV.<span id="lv" class="c">1</span></div><div>TIME <span id="tm" class="g">17.0</span></div><div>SCORE <span id="sc" class="c">0</span></div></div>
+  <div id="stg-box">
+    <div id="pop"></div><div id="alt"></div>
+    <div id="arn">
+      <div class="crd" id="cL"><div>📱</div><span>よそ見</span></div>
+      <div id="face"><div id="tgt">😴</div>
+        <span class="ddl" id="d1" style="top:14px;left:38px;color:#ff0055">肉</span>
+        <span class="ddl" id="d2" style="top:42px;left:18px">👓</span>
+        <span class="ddl" id="d3" style="top:62px;left:35px">〰️</span>
+        <span class="ddl" id="d4" style="top:28px;right:14px">🌀</span>
       </div>
-      <div class="crowd" id="cR"><div>📖</div><span>よそ見</span></div>
+      <div class="crd" id="cR"><div>📖</div><span>よそ見</span></div>
     </div>
     <div id="msg">熟睡中（チャンス！）</div>
   </div>
-  <div id="bar-wrap"><div id="bar"></div><div id="bar-txt">進行度: 0%</div></div>
+  <div id="bw"><div id="bar"></div><div id="bt">進行度: 0%</div></div>
   <button id="btn" type="button">長押しで落書きする！</button>
   <div id="ov">
-    <h2 id="ov-t">いたずらステルス 3号</h2>
-    <p id="ov-d">レベルが上がると落書きが慎重になる！<br>「❗」が出たら指を離せ！<br><b>LV.5からは周りの人の視線（👁️）にも注意！</b></p>
-    <button id="start" type="button">ゲームスタート</button>
+    <h2 id="ot">いたずらステルス 3号</h2>
+    <p id="od">レベルが上がると落書きが慎重になる！<br>「❗」が出たら指を離せ！<br><b>LV.5からは周りの人の視線（👁️）にも注意！</b></p>
+    <button id="go" type="button">ゲームスタート</button>
   </div>
 </div>
-
 <script>
-const $ = id => document.getElementById(id);
-const box = $("box"), stgEl = $("stg"), tmEl = $("tm"), scEl = $("sc"), bonusEl = $("bonus");
-const alertEl = $("alert"), targetEl = $("target"), msgEl = $("msg"), bar = $("bar"), barTxt = $("bar-txt");
-const btn = $("btn"), ov = $("ov"), ovT = $("ov-t"), ovD = $("ov-d"), startBtn = $("start");
-const cL = $("cL"), cR = $("cR"), doodles = [$("d1"), $("d2"), $("d3"), $("d4")];
+const $=id=>document.getElementById(id);
+let play=0,act=0,st="S",pg=0,lv=1,sc=0,tm=17,t0,tL,tR,wL=0,wR=0,last=0,ac,tk=0;
+const dd=[$("d1"),$("d2"),$("d3"),$("d4")];
+function bp(f,tp,d,v=.04){try{if(!ac)ac=new(window.AudioContext||window.webkitAudioContext)();if(ac.state==="suspended")ac.resume();const o=ac.createOscillator(),g=ac.createGain();o.type=tp;o.frequency.value=f;g.gain.value=v;g.gain.exponentialRampToValueAtTime(.001,ac.currentTime+d);o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}}
+const dn=e=>{if(e.cancelable)e.preventDefault();if(!play)return;act=1;$("btn").classList.add("on");$("btn").textContent="カキカキ中… ✍️"};
+const up=()=>{if(!play)return;if(act&&st==="W"){const b=100+lv*30;sc+=b;$("sc").textContent=sc;$("pop").textContent=`ギリギリ回避！ +${b}`;$("pop").style.opacity=1;setTimeout(()=>$("pop").style.opacity=0,800);bp(880,"sine",.15,.06)}act=0;$("btn").classList.remove("on");$("btn").textContent="長押しで落書きする！"};
+$("btn").onmousedown=dn;window.onmouseup=up;$("btn").addEventListener("touchstart",dn,{passive:false});window.ontouchend=up;
 
-let play = false, act = false, state = "SLEEP", prog = 0, stg = 1, sc = 0, time = 16;
-let timer = null, cTimerL = null, cTimerR = null, watchL = false, watchR = false, last = 0, ac = null, tick = 0;
-
-function beep(f, type, d, v = 0.04) {
-  try {
-    if (!ac) ac = new (window.AudioContext || window.webkitAudioContext)();
-    if (ac.state === "suspended") ac.resume();
-    const o = ac.createOscillator(), g = ac.createGain();
-    o.type = type; o.frequency.value = f; g.gain.value = v;
-    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime + d);
-    o.connect(g); g.connect(ac.destination); o.start(); o.stop(ac.currentTime + d);
-  } catch (e) {}
-}
-
-function pop(txt) {
-  bonusEl.textContent = txt; bonusEl.style.opacity = "1";
-  setTimeout(() => bonusEl.style.opacity = "0", 800);
-}
-
-const onDown = e => {
-  if (e.cancelable) e.preventDefault();
-  if (!play) return;
-  act = true; btn.classList.add("on"); btn.textContent = "カキカキ中… ✍️";
-};
-const onUp = () => {
-  if (!play) return;
-  if (act && state === "WARN") {
-    const b = 100 + stg * 30; sc += b; scEl.textContent = sc;
-    pop(`ギリギリ回避！ +${b}`); beep(880, "sine", 0.15, 0.06);
-  }
-  act = false; btn.classList.remove("on"); btn.textContent = "長押しで落書きする！";
-};
-
-btn.addEventListener("mousedown", onDown);
-window.addEventListener("mouseup", onUp);
-btn.addEventListener("touchstart", onDown, { passive: false });
-window.addEventListener("touchend", onUp);
-
-// 周りの人の監視ループ（LV.5以降）
-function runCrowd(side) {
-  if (!play || stg < 5) return;
-  const el = side === "L" ? cL : cR;
-  const idleIcon = side === "L" ? "📱" : "📖";
-  const setWatch = (w) => {
-    if (!play) return;
-    if (side === "L") watchL = w; else watchR = w;
-    if (w === "WARN") {
-      el.innerHTML = `<div>😲</div><span style="color:#ffcc00">チラッ…</span>`;
-      beep(680, "sine", 0.06, 0.03);
-      const t = setTimeout(() => setWatch(true), 650);
-      if (side === "L") cTimerL = t; else cTimerR = t;
-    } else if (w === true) {
-      el.innerHTML = `<div>👁️</div><span style="color:#ff4b6e">監視中！</span>`;
-      const t = setTimeout(() => setWatch(false), 1100 + Math.random() * 1200);
-      if (side === "L") cTimerL = t; else cTimerR = t;
-    } else {
-      el.innerHTML = `<div>${idleIcon}</div><span style="color:#aaa">よそ見</span>`;
-      const t = setTimeout(() => setWatch("WARN"), 1800 + Math.random() * 2500);
-      if (side === "L") cTimerL = t; else cTimerR = t;
-    }
+function crd(s){
+  if(!play||lv<5)return;
+  const el=$(s==="L"?"cL":"cR"),ic=s==="L"?"📱":"📖";
+  const set=w=>{
+    if(!play)return;if(s==="L")wL=w;else wR=w;
+    if(w==="W"){el.innerHTML=`<div>😲</div><span style="color:#ffcc00">チラッ…</span>`;bp(680,"sine",.06,.03);const t=setTimeout(()=>set(1),650);s==="L"?tL=t:tR=t}
+    else if(w===1){el.innerHTML=`<div>👁️</div><span style="color:#ff4b6e">監視中！</span>`;const t=setTimeout(()=>set(0),1100+Math.random()*1200);s==="L"?tL=t:tR=t}
+    else{el.innerHTML=`<div>${ic}</div><span style="color:#aaa">よそ見</span>`;const t=setTimeout(()=>set("W"),1800+Math.random()*2400);s==="L"?tL=t:tR=t}
   };
-  const initT = setTimeout(() => setWatch("WARN"), (side === "L" ? 1200 : 2600) + Math.random() * 1500);
-  if (side === "L") cTimerL = initT; else cTimerR = initT;
+  const it=setTimeout(()=>set("W"),(s==="L"?1200:2500)+Math.random()*1500);s==="L"?tL=it:tR=it;
 }
 
-function setState(s) {
-  if (!play) return;
-  state = s;
-  if (s === "SLEEP") {
-    alertEl.textContent = "💤"; targetEl.textContent = "😴";
-    msgEl.textContent = "スヤスヤ寝ている…"; msgEl.style.color = "#00ffcc";
-    const r = Math.random(), spd = Math.max(0.55, 1 - (stg - 1) * 0.06);
-    const dur = (r < 0.25 ? 500 + Math.random() * 500 : r < 0.8 ? 1200 + Math.random() * 1500 : 2600 + Math.random() * 1400) * spd;
-    timer = setTimeout(() => setState(Math.random() < 0.35 ? "FAKE" : "WARN"), dur);
-  } else if (s === "FAKE") {
-    alertEl.textContent = "💬"; targetEl.textContent = "🤤";
-    msgEl.textContent = "ムニャムニャ…（寝言だ！）"; msgEl.style.color = "#66d9ff";
-    beep(320, "sine", 0.08, 0.03);
-    timer = setTimeout(() => setState(Math.random() < 0.5 ? "WARN" : "SLEEP"), 550 + Math.random() * 650);
-  } else if (s === "WARN") {
-    alertEl.textContent = "❗"; targetEl.textContent = "😪";
-    msgEl.textContent = "起きるぞ！指を離せ！"; msgEl.style.color = "#ffcc00";
-    beep(520, "triangle", 0.12, 0.06);
-    const wDur = Math.max(380, 600 - stg * 20) + Math.random() * 450;
-    timer = setTimeout(() => setState("AWAKE"), wDur);
-  } else if (s === "AWAKE") {
-    alertEl.textContent = "👀"; targetEl.textContent = "😠";
-    msgEl.textContent = "本人が警戒中…"; msgEl.style.color = "#ff4b6e";
-    beep(180, "sawtooth", 0.15, 0.04);
-    timer = setTimeout(() => setState("SLEEP"), 800 + Math.random() * 1400);
+function setSt(s){
+  if(!play)return;st=s;
+  if(s==="S"){$("alt").textContent="💤";$("tgt").textContent="😴";$("msg").textContent="スヤスヤ寝ている…";$("msg").style.color="#00ffcc";const r=Math.random(),sp=Math.max(.55,1-(lv-1)*.06),du=(r<.25?500+Math.random()*500:r<.8?1200+Math.random()*1500:2600+Math.random()*1400)*sp;t0=setTimeout(()=>setSt(Math.random()<.35?"F":"W"),du)}
+  else if(s==="F"){$("alt").textContent="💬";$("tgt").textContent="🤤";$("msg").textContent="ムニャムニャ…（寝言だ！）";$("msg").style.color="#66d9ff";bp(320,"sine",.08,.03);t0=setTimeout(()=>setSt(Math.random()<.5?"W":"S"),550+Math.random()*650)}
+  else if(s==="W"){$("alt").textContent="❗";$("tgt").textContent="😪";$("msg").textContent="起きるぞ！指を離せ！";$("msg").style.color="#ffcc00";bp(520,"triangle",.12,.06);t0=setTimeout(()=>setSt("A"),Math.max(380,600-lv*20)+Math.random()*450)}
+  else{$("alt").textContent="👀";$("tgt").textContent="😠";$("msg").textContent="本人が警戒中…";$("msg").style.color="#ff4b6e";bp(180,"sawtooth",.15,.04);t0=setTimeout(()=>setSt("S"),800+Math.random()*1400)}
+}
+
+function end(win,rs=""){
+  play=0;act=0;$("btn").classList.remove("on");clearTimeout(t0);clearTimeout(tL);clearTimeout(tR);
+  if(win){bp(587,"sine",.1,.06);setTimeout(()=>bp(880,"sine",.2,.06),100);$("tgt").textContent="🤡";$("alt").textContent="🎉";const tb=Math.floor(tm*30);sc+=lv*150+tb;$("sc").textContent=sc;$("ot").textContent=`LV.${lv} クリア！`;$("od").innerHTML=`アート完成！ボーナス <b>+${tb}</b><br>スコア: <b>${sc}</b>${lv===4?"<br><b style='color:#ffcc00'>⚠️ 次から周りの人間が出現！</b>":""}`;lv++;$("go").textContent=`レベル ${lv} へ`}
+  else{$("box").classList.remove("shake");void $("box").offsetWidth;$("box").classList.add("shake");bp(110,"sawtooth",.4,.08);$("tgt").textContent="🤬";$("alt").textContent="💢";$("ot").textContent=rs||"バレた！！";$("od").innerHTML=`到達レベル: <b>LV.${lv}</b><br>最終スコア: <b>${sc}</b>`;lv=1;sc=0;$("go").textContent="最初からリベンジ"}
+  $("ov").style.display="flex";
+}
+
+function loop(now){
+  if(!play)return;const dt=(now-last)/1000;last=now;tm-=dt;
+  if(tm<=0){$("tm").textContent="0.0";end(0,"時間切れ！！");return}$("tm").textContent=tm.toFixed(1);
+  if(act){
+    if(st==="A"){end(0,"本人にバレた！！");return}
+    if(lv>=5&&(wL===1||wR===1)){end(0,"周りの人に見つかった！！");return}
+    const lvs=Math.max(.45,1-(lv-1)*.07),m=st==="W"?1.5:1;
+    pg+=28*lvs*dt*m;sc+=Math.ceil(60*(1+lv*.15)*dt*m);$("sc").textContent=sc;
+    if(++tk%6===0)bp(400+pg*4,"square",.03,.02);
+    const p=Math.min(100,Math.floor(pg));$("bar").style.width=p+"%";$("bt").textContent=`進行度: ${p}%`;
+    dd.forEach((d,i)=>d.style.opacity=pg>=(i+1)*22?1:0);
+    if(pg>=100){end(1);return}
   }
+  requestAnimationFrame(loop);
 }
 
-function end(win, reason = "") {
-  play = false; act = false; btn.classList.remove("on");
-  clearTimeout(timer); clearTimeout(cTimerL); clearTimeout(cTimerR);
-  if (win) {
-    beep(587, "sine", 0.1, 0.06); setTimeout(() => beep(880, "sine", 0.2, 0.06), 100);
-    targetEl.textContent = "🤡"; alertEl.textContent = "🎉";
-    const tb = Math.floor(time * 30); sc += stg * 150 + tb; scEl.textContent = sc;
-    ovT.textContent = `LV.${stg} クリア！`;
-    const nextNote = stg === 4 ? "<br><b style='color:#ffcc00'>⚠️ 次から周りの人間が出現！</b>" : "";
-    ovD.innerHTML = `アート完成！タイムボーナス <b>+${tb}</b><br>スコア: <b>${sc}</b>${nextNote}`;
-    stg++; startBtn.textContent = `レベル ${stg} へ`;
-  } else {
-    box.classList.remove("shake"); void box.offsetWidth; box.classList.add("shake");
-    beep(110, "sawtooth", 0.4, 0.08);
-    targetEl.textContent = "🤬"; alertEl.textContent = "💢";
-    ovT.textContent = reason || "バレた！！";
-   ovD.innerHTML = 到達レベル: <b>LV.${stg}</b><br>最終スコア: <b>${sc}</b>;
-stg = 1; sc = 0; startBtn.textContent = "最初からリベンジ";
-}
-ov.style.display = "flex";
-}
-function loop(now) {
-if (!play) return;
-const dt = (now - last) / 1000; last = now;
-time -= dt;
-if (time <= 0) { tmEl.textContent = "0.0"; end(false, "時間切れ！！"); return; }
-tmEl.textContent = time.toFixed(1);
-if (act) {
-if (state === "AWAKE") { end(false, "本人にバレた！！"); return; }
-if (stg >= 5 && (watchL === true || watchR === true)) { end(false, "周りの人に見つかった！！"); return; }
-// レベルが上がるほどゲージ上昇率が低下（LV1: 28/秒 → 高LV: 最低12.5/秒）
-const lvScale = Math.max(0.45, 1 - (stg - 1) * 0.07);
-const mult = state === "WARN" ? 1.5 : 1;
-prog += 28 * lvScale * dt * mult;
-sc += Math.ceil(60 * (1 + stg * 0.15) * dt * mult);
-scEl.textContent = sc;
-if (++tick % 6 === 0) beep(400 + prog * 4, "square", 0.03, 0.02);
-const p = Math.min(100, Math.floor(prog));
-bar.style.width = p + "%"; barTxt.textContent = 進行度: ${p}%;
-doodles.forEach((d, i) => d.style.opacity = prog >= (i + 1) * 22 ? "1" : "0");
-if (prog >= 100) { end(true); return; }
-}
-requestAnimationFrame(loop);
-}
-startBtn.addEventListener("click", () => {
-prog = 0;
-// ゲージ上昇率が下がる分、制限時間は少し余裕を持たせて調整
-time = Math.max(13, 17 - (stg - 1) * 0.3);
-bar.style.width = "0%"; barTxt.textContent = "進行度: 0%";
-doodles.forEach(d => d.style.opacity = "0");
-stgEl.textContent = stg; scEl.textContent = sc; tmEl.textContent = time.toFixed(1);
-watchL = false; watchR = false;
-cL.style.opacity = stg >= 5 ? "1" : "0";
-cR.style.opacity = stg >= 5 ? "1" : "0";
-ov.style.display = "none"; play = true; act = false;
-last = performance.now(); setState("SLEEP");
-if (stg >= 5) { runCrowd("L"); runCrowd("R"); }
-requestAnimationFrame(loop);
-});
- </script>
+$("go").onclick=()=>{pg=0;tm=Math.max(13,17-(lv-1)*.3);$("bar").style.width="0%";$("bt").textContent="進行度: 0%";dd.forEach(d=>d.style.opacity=0);$("lv").textContent=lv;$("sc").textContent=sc;$("tm").textContent=tm.toFixed(1);wL=0;wR=0;$("cL").style.opacity=lv>=5?1:0;$("cR").style.opacity=lv>=5?1:0;$("ov").style.display="none";play=1;act=0;last=performance.now();setSt("S");if(lv>=5){crd("L");crd("R")}requestAnimationFrame(loop)};
+</script>
 </body>
 </html>
