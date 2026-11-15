@@ -1,1 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>スペースシューター</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #111;
+    color: #fff;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    overflow: hidden;
+    touch-action: none;
+  }
+  #ui {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    font-size: 18px;
+    font-weight: bold;
+  }
+  canvas {
+    background: radial-gradient(circle, #1a1a2e 0%, #0f0f1a 100%);
+    border: 2px solid #444;
+    border-radius: 8px;
+    max-width: 100%;
+    max-height: 80vh;
+  }
+  #overlay {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    border: 1px solid #555;
+  }
+  h1 { font-size: 24px; margin-bottom: 10px; color: #00ffcc; }
+  p { font-size: 14px; margin-bottom: 20px; color: #ccc; }
+  button {
+    background: #00ffcc;
+    color: #000;
+    border: none;
+    padding: 12px 24px;
+    font-size: 18px;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  button:hover { background: #00cca3; }
+</style>
+</head>
+<body>
 
+<div id="ui">
+  <div>SCORE: <span id="score">0</span></div>
+  <div>BEST: <span id="best">0</span></div>
+</div>
+
+<canvas id="game" width="400" height="600"></canvas>
+
+<div id="overlay">
+  <h1 id="title">SPACE SHOOTER</h1>
+  <p id="desc">マウス移動 / タッチ操作で自機を動かせ！<br>（弾は自動で発射されます）</p>
+  <button id="startBtn">スタート</button>
+</div>
+
+<script>
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const scoreEl = document.getElementById("score");
+const bestEl = document.getElementById("best");
+const overlay = document.getElementById("overlay");
+const titleEl = document.getElementById("title");
+const descEl = document.getElementById("desc");
+const startBtn = document.getElementById("startBtn");
+
+let score = 0;
+let best = localStorage.getItem("shooter_best") || 0;
+bestEl.textContent = best;
+
+let isPlaying = false;
+let frame = 0;
+let player = { x: 200, y: 530, r: 18 };
+let bullets = [];
+let enemies = [];
+let particles = [];
+
+// 音の生成（外部ファイル不要の簡易SE）
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playBeep(freq, type, duration) {
+  if (audioCtx.state === "suspended") audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+// 操作イベント（マウス＆タッチ両対応）
+function movePlayer(clientX) {
+  if (!isPlaying) return;
+  const rect = canvas.getBoundingClientRect();
+  const scaleX = canvas.width / rect.width;
+  let x = (clientX - rect.left) * scaleX;
+  player.x = Math.max(player.r, Math.min(canvas.width - player.r, x));
+}
+
+canvas.addEventListener("mousemove", e => movePlayer(e.clientX));
+canvas.addEventListener("touchmove", e => {
+  e.preventDefault();
+  movePlayer(e.touches[0].clientX);
+}, { passive: false });
+
+// ゲーム開始処理
+startBtn.addEventListener("click", () => {
+  score = 0;
+  frame = 0;
+  bullets = [];
+  enemies = [];
+  particles = [];
+  player.x = 200;
+  scoreEl.textContent = score;
+  overlay.style.display = "none";
+  isPlaying = true;
+  loop();
+});
+
+function spawnExplosion(x, y, color) {
+  for (let i = 0; i < 10; i++) {
+    particles.push({
+      x, y,
+      vx: (Math.random() - 0.5) * 6,
+      vy: (Math.random() - 0.5) * 6,
+      life: 20,
+      color
+    });
+  }
+}
+
+function gameOver() {
+  isPlaying = false;
+  playBeep(120, "sawtooth", 0.4);
+  if (score > best) {
+    best = score;
+    localStorage.setItem("shooter_best", best);
+    bestEl.textContent = best;
+  }
+  titleEl.textContent = "GAME OVER";
+  descEl.innerHTML = `最終スコア: <b>${score}</b>`;
+  startBtn.textContent = "もう一回遊ぶ";
+  overlay.style.display = "block";
+}
+
+function update() {
+  frame++;
+
+  // 自動連射（10フレームごと）
+  if (frame % 10 === 0) {
+    bullets.push({ x: player.x, y: player.y - 20, r: 4 });
+    playBeep(600, "square", 0.05);
+  }
+
+  // 敵の出現（スコアに応じて少しずつ速くなる）
+  const spawnRate = Math.max(15, 45 - Math.floor(score / 100));
+  if (frame % spawnRate === 0) {
+    const isHard = Math.random() < 0.25;
+    enemies.push({
+      x: Math.random() * (canvas.width - 40) + 20,
+      y: -20,
+      r: isHard ? 22 : 16,
+      hp: isHard ? 3 : 1,
+      speed: (isHard ? 2 : 3.5) + Math.min(3, score / 500),
+      emoji: isHard ? "👾" : "🛸"
+    });
+  }
+
+  // 弾の移動
+  for (let i = bullets.length - 1; i >= 0; i--) {
+    bullets[i].y -= 9;
+    if (bullets[i].y < -10) bullets.splice(i, 1);
+  }
+
+  // 敵の移動と判定
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const e = enemies[i];
+    e.y += e.speed;
+
+    // 自機との衝突判定
+    const distPlayer = Math.hypot(player.x - e.x, player.y - e.y);
+    if (distPlayer < player.r + e.r - 4) {
+      gameOver();
+      return;
+    }
+
+    // 画面下に抜けたら消去
+    if (e.y > canvas.height + 30) {
+      enemies.splice(i, 1);
+      continue;
+    }
+
+    // 弾との当たり判定
+    for (let j = bullets.length - 1; j >= 0; j--) {
+      const b = bullets[j];
+      const distBullet = Math.hypot(b.x - e.x, b.y - e.y);
+      if (distBullet < e.r + b.r) {
+        bullets.splice(j, 1);
+        e.hp--;
+        if (e.hp <= 0) {
+          spawnExplosion(e.x, e.y, "#ff5555");
+          playBeep(250, "triangle", 0.1);
+          enemies.splice(i, 1);
+          score += 10;
+          scoreEl.textContent = score;
+        } else {
+          playBeep(400, "sine", 0.05);
+        }
+        break;
+      }
+    }
+  }
+
+  // 爆発エフェクトの更新
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx;
+    p.y += p.vy;
+    p.life--;
+    if (p.life <= 0) particles.splice(i, 1);
+  }
+}
+
+function draw() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  // 自機の描画
+  ctx.font = "32px sans-serif";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
+  ctx.fillText("🚀", player.x, player.y);
+
+  // 弾の描画
+  ctx.fillStyle = "#00ffcc";
+  bullets.forEach(b => {
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+    ctx.fill();
+  });
+
+  // 敵の描画
+  enemies.forEach(e => {
+    ctx.font = `${e.r * 1.8}px sans-serif`;
+    ctx.fillText(e.emoji, e.x, e.y);
+  });
+
+  // 爆発パーティクルの描画
+  particles.forEach(p => {
+    ctx.fillStyle = p.color;
+    ctx.globalAlpha = p.life / 20;
+    ctx.fillRect(p.x, p.y, 4, 4);
+    ctx.globalAlpha = 1;
+  });
+}
+
+function loop() {
+  if (!isPlaying) return;
+  update();
+  draw();
+  requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
