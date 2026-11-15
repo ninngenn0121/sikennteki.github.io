@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>SPACE SHOOTER</title>
+<title>いたずらステルス（試作品1号）</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
   body {
-    background: #111;
+    background: #1a1a2e;
     color: #fff;
     font-family: sans-serif;
     display: flex;
@@ -16,284 +16,264 @@
     justify-content: center;
     height: 100vh;
     overflow: hidden;
-    touch-action: none;
+    touch-action: manipulation;
   }
-  #ui {
-    width: 100%;
-    max-width: 400px;
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 15px;
-    font-size: 18px;
-    font-weight: bold;
-  }
-  canvas {
-    background: #0f0f1a;
-    border: 2px solid #444;
-    border-radius: 8px;
+  #game-container {
     width: 95vw;
     max-width: 400px;
-    height: auto;
-    aspect-ratio: 2 / 3;
-    display: block;
+    background: #16213e;
+    border: 2px solid #0f3460;
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+  }
+  #header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #e94560;
+  }
+  #stage {
+    height: 260px;
+    background: #0f3460;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    margin-bottom: 20px;
+  }
+  #alert {
+    font-size: 40px;
+    height: 50px;
+    font-weight: bold;
+    color: #ffcc00;
+  }
+  #target {
+    font-size: 80px;
+    transition: transform 0.1s;
+  }
+  #status-text {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+    color: #a8dadc;
+  }
+  #progress-wrap {
+    width: 100%;
+    height: 24px;
+    background: #0a0a12;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    border: 1px solid #444;
+  }
+  #progress-bar {
+    width: 0%;
+    height: 100%;
+    background: #00ffcc;
+    transition: width 0.05s linear;
+  }
+  #action-btn {
+    width: 100%;
+    padding: 20px;
+    font-size: 20px;
+    font-weight: bold;
+    background: #e94560;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+  }
+  #action-btn:active {
+    background: #c0354c;
+    transform: scale(0.98);
   }
   #overlay {
     position: absolute;
-    background: rgba(0, 0, 0, 0.85);
-    padding: 30px 20px;
+    inset: 0;
+    background: rgba(10, 10, 20, 0.92);
     border-radius: 12px;
-    text-align: center;
-    border: 1px solid #555;
-    width: 85%;
-    max-width: 340px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
     z-index: 10;
   }
-  h1 { font-size: 24px; margin-bottom: 12px; color: #00ffcc; }
-  p { font-size: 14px; margin-bottom: 20px; color: #ccc; line-height: 1.5; }
-  button {
+  #overlay h2 { font-size: 24px; color: #00ffcc; margin-bottom: 12px; }
+  #overlay p { font-size: 14px; color: #ccc; margin-bottom: 24px; line-height: 1.6; }
+  #start-btn {
+    padding: 14px 32px;
+    font-size: 18px;
+    font-weight: bold;
     background: #00ffcc;
     color: #000;
     border: none;
-    padding: 14px 28px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 6px;
+    border-radius: 8px;
     cursor: pointer;
-    width: 100%;
   }
 </style>
 </head>
 <body>
 
-<div id="ui">
-  <div>SCORE: <span id="score">0</span></div>
-  <div>BEST: <span id="best">0</span></div>
-</div>
+<div id="game-container">
+  <div id="header">
+    <div>STAGE: <span id="stage-num">1</span></div>
+    <div>SCORE: <span id="score">0</span></div>
+  </div>
 
-<canvas id="game" width="400" height="600"></canvas>
+  <div id="stage">
+    <div id="alert"></div>
+    <div id="target">😴</div>
+    <div id="status-text">寝ている（今がチャンス！）</div>
+  </div>
 
-<div id="overlay">
-  <h1 id="title">SPACE SHOOTER</h1>
-  <p id="desc">マウス移動 / 指でなぞって自機を操作！<br>弾は自動で発射されます。</p>
-  <button id="startBtn" type="button">ゲームスタート</button>
+  <div id="progress-wrap">
+    <div id="progress-bar"></div>
+  </div>
+
+  <button id="action-btn" type="button">長押しで顔に落書き！</button>
+
+  <div id="overlay">
+    <h2 id="ov-title">いたずらステルス</h2>
+    <p id="ov-desc">居眠りしている相手の顔に落書きしよう！<br>「！」が出たら目を覚ます合図。<br>指を離して寝たふりをしよう！</p>
+    <button id="start-btn" type="button">スタート</button>
+  </div>
 </div>
 
 <script>
 window.addEventListener("DOMContentLoaded", () => {
-  const canvas = document.getElementById("game");
-  const ctx = canvas.getContext("2d");
+  const stageEl = document.getElementById("stage-num");
   const scoreEl = document.getElementById("score");
-  const bestEl = document.getElementById("best");
+  const alertEl = document.getElementById("alert");
+  const targetEl = document.getElementById("target");
+  const statusEl = document.getElementById("status-text");
+  const barEl = document.getElementById("progress-bar");
+  const actionBtn = document.getElementById("action-btn");
   const overlay = document.getElementById("overlay");
-  const titleEl = document.getElementById("title");
-  const descEl = document.getElementById("desc");
-  const startBtn = document.getElementById("startBtn");
-
-  let score = 0;
-  let best = 0;
-  try { best = Number(localStorage.getItem("shooter_best")) || 0; } catch (e) {}
-  bestEl.textContent = best;
+  const ovTitle = document.getElementById("ov-title");
+  const ovDesc = document.getElementById("ov-desc");
+  const startBtn = document.getElementById("start-btn");
 
   let isPlaying = false;
-  let frame = 0;
-  let animationId = null;
-  let player = { x: 200, y: 530, r: 18 };
-  let bullets = [];
-  let enemies = [];
-  let particles = [];
-  let audioCtx = null;
+  let isActing = false;
+  let state = "SLEEP"; // SLEEP, WARN, AWAKE
+  let progress = 0;
+  let stage = 1;
+  let score = 0;
+  let stateTimer = null;
+  let loopId = null;
 
-  function playBeep(freq, type, duration) {
-    try {
-      if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) audioCtx = new AudioContext();
-      }
-      if (!audioCtx) return;
-      if (audioCtx.state === "suspended") audioCtx.resume();
-      const osc = audioCtx.createOscillator();
-      const gain = audioCtx.createGain();
-      osc.type = type;
-      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      gain.gain.setValueAtTime(0.04, audioCtx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-      osc.connect(gain);
-      gain.connect(audioCtx.destination);
-      osc.start();
-      osc.stop(audioCtx.currentTime + duration);
-    } catch (e) {}
-  }
-
-  function movePlayer(clientX) {
+  // ボタンの長押し検知（PCマウス・スマホタッチ両対応）
+  const startAction = (e) => {
+    if (e.cancelable) e.preventDefault();
     if (!isPlaying) return;
-    const rect = canvas.getBoundingClientRect();
-    if (rect.width === 0) return;
-    const scaleX = canvas.width / rect.width;
-    const x = (clientX - rect.left) * scaleX;
-    player.x = Math.max(player.r, Math.min(canvas.width - player.r, x));
-  }
+    isActing = true;
+    actionBtn.textContent = "落書き中... ✍️";
+  };
+  const stopAction = () => {
+    isActing = false;
+    actionBtn.textContent = "長押しで顔に落書き！";
+  };
 
-  window.addEventListener("mousemove", e => movePlayer(e.clientX));
-  canvas.addEventListener("touchstart", e => {
-    if (e.touches && e.touches.length > 0) movePlayer(e.touches[0].clientX);
-  }, { passive: true });
-  canvas.addEventListener("touchmove", e => {
-    e.preventDefault();
-    if (e.touches && e.touches.length > 0) movePlayer(e.touches[0].clientX);
-  }, { passive: false });
+  actionBtn.addEventListener("mousedown", startAction);
+  window.addEventListener("mouseup", stopAction);
+  actionBtn.addEventListener("touchstart", startAction, { passive: false });
+  window.addEventListener("touchend", stopAction);
 
-  function drawInitial() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "32px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("🚀", player.x, player.y);
-  }
-  drawInitial();
-
-  startBtn.addEventListener("click", () => {
-    if (animationId) cancelAnimationFrame(animationId);
-    score = 0;
-    frame = 0;
-    bullets = [];
-    enemies = [];
-    particles = [];
-    player.x = 200;
-    scoreEl.textContent = score;
-    overlay.style.display = "none";
-    isPlaying = true;
-    playBeep(500, "sine", 0.1);
-    loop();
-  });
-
-  function spawnExplosion(x, y, color) {
-    for (let i = 0; i < 10; i++) {
-      particles.push({
-        x, y,
-        vx: (Math.random() - 0.5) * 6,
-        vy: (Math.random() - 0.5) * 6,
-        life: 20,
-        color
-      });
+  function setState(newState) {
+    state = newState;
+    if (state === "SLEEP") {
+      alertEl.textContent = "";
+      targetEl.textContent = "😴";
+      statusEl.textContent = "寝ている（今がチャンス！）";
+      statusEl.style.color = "#00ffcc";
+      const nextTime = Math.max(1200, (3000 - stage * 200) * (0.7 + Math.random() * 0.6));
+      stateTimer = setTimeout(() => setState("WARN"), nextTime);
+    } else if (state === "WARN") {
+      alertEl.textContent = "❗";
+      targetEl.textContent = "😪";
+      statusEl.textContent = "起きそう…！指を離せ！";
+      statusEl.style.color = "#ffcc00";
+      const warnTime = Math.max(450, 900 - stage * 50);
+      stateTimer = setTimeout(() => setState("AWAKE"), warnTime);
+    } else if (state === "AWAKE") {
+      alertEl.textContent = "👀";
+      targetEl.textContent = "😠";
+      statusEl.textContent = "キョロキョロしている…";
+      statusEl.style.color = "#e94560";
+      const awakeTime = 1500 + Math.random() * 1000;
+      stateTimer = setTimeout(() => setState("SLEEP"), awakeTime);
     }
   }
 
   function gameOver() {
     isPlaying = false;
-    playBeep(120, "sawtooth", 0.4);
-    if (score > best) {
-      best = score;
-      try { localStorage.setItem("shooter_best", String(best)); } catch (e) {}
-      bestEl.textContent = best;
-    }
-    titleEl.textContent = "GAME OVER";
-    descEl.innerHTML = `最終スコア: <b>${score}</b>`;
+    isActing = false;
+    clearTimeout(stateTimer);
+    cancelAnimationFrame(loopId);
+    targetEl.textContent = "🤬";
+    alertEl.textContent = "💢";
+    ovTitle.textContent = "バレた！！";
+    ovDesc.innerHTML = `落書きしているところを見つかった！<br>到達ステージ: <b>${stage}</b> / スコア: <b>${score}</b>`;
     startBtn.textContent = "もう一回遊ぶ";
-    overlay.style.display = "block";
+    overlay.style.display = "flex";
+  }
+
+  function stageClear() {
+    isPlaying = false;
+    isActing = false;
+    clearTimeout(stateTimer);
+    cancelAnimationFrame(loopId);
+    targetEl.textContent = "🤡";
+    alertEl.textContent = "✨";
+    score += stage * 100;
+    scoreEl.textContent = score;
+    stage++;
+    ovTitle.textContent = "いたずら成功！";
+    ovDesc.innerHTML = `顔に立派な落書きが完成した！<br>次は <b>ステージ ${stage}</b> に挑戦だ！`;
+    startBtn.textContent = "次のステージへ";
+    overlay.style.display = "flex";
   }
 
   function update() {
-    frame++;
-    if (frame % 10 === 0) {
-      bullets.push({ x: player.x, y: player.y - 20, r: 4 });
-      playBeep(600, "square", 0.04);
-    }
+    if (!isPlaying) return;
 
-    const spawnRate = Math.max(15, 45 - Math.floor(score / 100));
-    if (frame % spawnRate === 0) {
-      const isHard = Math.random() < 0.25;
-      enemies.push({
-        x: Math.random() * (canvas.width - 40) + 20,
-        y: -20,
-        r: isHard ? 22 : 16,
-        hp: isHard ? 3 : 1,
-        speed: (isHard ? 2 : 3.5) + Math.min(3, score / 500),
-        emoji: isHard ? "👾" : "🛸"
-      });
-    }
-
-    for (let i = bullets.length - 1; i >= 0; i--) {
-      bullets[i].y -= 9;
-      if (bullets[i].y < -10) bullets.splice(i, 1);
-    }
-
-    for (let i = enemies.length - 1; i >= 0; i--) {
-      const e = enemies[i];
-      e.y += e.speed;
-
-      if (Math.hypot(player.x - e.x, player.y - e.y) < player.r + e.r - 4) {
+    if (isActing) {
+      if (state === "AWAKE") {
         gameOver();
         return;
       }
+      progress += 0.6;
+      score += 1;
+      scoreEl.textContent = score;
+      barEl.style.width = `${Math.min(100, progress)}%`;
 
-      if (e.y > canvas.height + 30) {
-        enemies.splice(i, 1);
-        continue;
-      }
-
-      for (let j = bullets.length - 1; j >= 0; j--) {
-        const b = bullets[j];
-        if (Math.hypot(b.x - e.x, b.y - e.y) < e.r + b.r) {
-          bullets.splice(j, 1);
-          e.hp--;
-          if (e.hp <= 0) {
-            spawnExplosion(e.x, e.y, "#ff5555");
-            playBeep(250, "triangle", 0.08);
-            enemies.splice(i, 1);
-            score += 10;
-            scoreEl.textContent = score;
-          } else {
-            playBeep(400, "sine", 0.04);
-          }
-          break;
-        }
+      if (progress >= 100) {
+        stageClear();
+        return;
       }
     }
 
-    for (let i = particles.length - 1; i >= 0; i--) {
-      const p = particles[i];
-      p.x += p.vx;
-      p.y += p.vy;
-      p.life--;
-      if (p.life <= 0) particles.splice(i, 1);
-    }
+    loopId = requestAnimationFrame(update);
   }
 
-  function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.font = "32px sans-serif";
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillText("🚀", player.x, player.y);
-
-    ctx.fillStyle = "#00ffcc";
-    bullets.forEach(b => {
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.fill();
-    });
-
-    enemies.forEach(e => {
-      ctx.font = `${e.r * 1.8}px sans-serif`;
-      ctx.fillText(e.emoji, e.x, e.y);
-    });
-
-    particles.forEach(p => {
-      ctx.fillStyle = p.color;
-      ctx.globalAlpha = p.life / 20;
-      ctx.fillRect(p.x, p.y, 4, 4);
-      ctx.globalAlpha = 1;
-    });
-  }
-
-  function loop() {
-    if (!isPlaying) return;
+  startBtn.addEventListener("click", () => {
+    progress = 0;
+    barEl.style.width = "0%";
+    stageEl.textContent = stage;
+    scoreEl.textContent = score;
+    overlay.style.display = "none";
+    isPlaying = true;
+    isActing = false;
+    setState("SLEEP");
     update();
-    if (isPlaying) {
-      draw();
-      animationId = requestAnimationFrame(loop);
-    }
-  }
+  });
 });
 </script>
 </body>
