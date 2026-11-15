@@ -9,7 +9,7 @@
   body {
     background: #111;
     color: #fff;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: sans-serif;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -61,7 +61,6 @@
     cursor: pointer;
     width: 100%;
   }
-  button:active { background: #00cca3; }
 </style>
 </head>
 <body>
@@ -92,9 +91,7 @@ window.addEventListener("DOMContentLoaded", () => {
 
   let score = 0;
   let best = 0;
-  try {
-    best = Number(localStorage.getItem("shooter_best")) || 0;
-  } catch (e) {}
+  try { best = Number(localStorage.getItem("shooter_best")) || 0; } catch (e) {}
   bestEl.textContent = best;
 
   let isPlaying = false;
@@ -106,7 +103,6 @@ window.addEventListener("DOMContentLoaded", () => {
   let particles = [];
   let audioCtx = null;
 
-  // 安全な効果音再生
   function playBeep(freq, type, duration) {
     try {
       if (!audioCtx) {
@@ -115,7 +111,6 @@ window.addEventListener("DOMContentLoaded", () => {
       }
       if (!audioCtx) return;
       if (audioCtx.state === "suspended") audioCtx.resume();
-
       const osc = audioCtx.createOscillator();
       const gain = audioCtx.createGain();
       osc.type = type;
@@ -126,12 +121,9 @@ window.addEventListener("DOMContentLoaded", () => {
       gain.connect(audioCtx.destination);
       osc.start();
       osc.stop(audioCtx.currentTime + duration);
-    } catch (e) {
-      // 音声非対応環境でもゲームを止めない
-    }
+    } catch (e) {}
   }
 
-  // 座標計算と自機移動
   function movePlayer(clientX) {
     if (!isPlaying) return;
     const rect = canvas.getBoundingClientRect();
@@ -143,14 +135,13 @@ window.addEventListener("DOMContentLoaded", () => {
 
   window.addEventListener("mousemove", e => movePlayer(e.clientX));
   canvas.addEventListener("touchstart", e => {
-    if (e.touches.length > 0) movePlayer(e.touches[0].clientX);
+    if (e.touches && e.touches.length > 0) movePlayer(e.touches[0].clientX);
   }, { passive: true });
   canvas.addEventListener("touchmove", e => {
     e.preventDefault();
-    if (e.touches.length > 0) movePlayer(e.touches[0].clientX);
+    if (e.touches && e.touches.length > 0) movePlayer(e.touches[0].clientX);
   }, { passive: false });
 
-  // 初期画面の描画
   function drawInitial() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.font = "32px sans-serif";
@@ -160,7 +151,6 @@ window.addEventListener("DOMContentLoaded", () => {
   }
   drawInitial();
 
-  // ゲーム開始
   startBtn.addEventListener("click", () => {
     if (animationId) cancelAnimationFrame(animationId);
     score = 0;
@@ -193,9 +183,7 @@ window.addEventListener("DOMContentLoaded", () => {
     playBeep(120, "sawtooth", 0.4);
     if (score > best) {
       best = score;
-      try {
-        localStorage.setItem("shooter_best", String(best));
-      } catch (e) {}
+      try { localStorage.setItem("shooter_best", String(best)); } catch (e) {}
       bestEl.textContent = best;
     }
     titleEl.textContent = "GAME OVER";
@@ -206,14 +194,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function update() {
     frame++;
-
-    // 自動連射
     if (frame % 10 === 0) {
       bullets.push({ x: player.x, y: player.y - 20, r: 4 });
       playBeep(600, "square", 0.04);
     }
 
-    // 敵の出現
     const spawnRate = Math.max(15, 45 - Math.floor(score / 100));
     if (frame % spawnRate === 0) {
       const isHard = Math.random() < 0.25;
@@ -227,20 +212,16 @@ window.addEventListener("DOMContentLoaded", () => {
       });
     }
 
-    // 弾の移動
     for (let i = bullets.length - 1; i >= 0; i--) {
       bullets[i].y -= 9;
       if (bullets[i].y < -10) bullets.splice(i, 1);
     }
 
-    // 敵の移動と判定
     for (let i = enemies.length - 1; i >= 0; i--) {
       const e = enemies[i];
       e.y += e.speed;
 
-      // 自機との衝突
-      const distPlayer = Math.hypot(player.x - e.x, player.y - e.y);
-      if (distPlayer < player.r + e.r - 4) {
+      if (Math.hypot(player.x - e.x, player.y - e.y) < player.r + e.r - 4) {
         gameOver();
         return;
       }
@@ -250,11 +231,9 @@ window.addEventListener("DOMContentLoaded", () => {
         continue;
       }
 
-      // 弾との判定
       for (let j = bullets.length - 1; j >= 0; j--) {
         const b = bullets[j];
-        const distBullet = Math.hypot(b.x - e.x, b.y - e.y);
-        if (distBullet < e.r + b.r) {
+        if (Math.hypot(b.x - e.x, b.y - e.y) < e.r + b.r) {
           bullets.splice(j, 1);
           e.hp--;
           if (e.hp <= 0) {
@@ -271,7 +250,6 @@ window.addEventListener("DOMContentLoaded", () => {
       }
     }
 
-    // 爆発エフェクト
     for (let i = particles.length - 1; i >= 0; i--) {
       const p = particles[i];
       p.x += p.vx;
@@ -283,14 +261,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
   function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 自機
     ctx.font = "32px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("🚀", player.x, player.y);
 
-    // 弾
     ctx.fillStyle = "#00ffcc";
     bullets.forEach(b => {
       ctx.beginPath();
@@ -298,13 +273,11 @@ window.addEventListener("DOMContentLoaded", () => {
       ctx.fill();
     });
 
-    // 敵
     enemies.forEach(e => {
       ctx.font = `${e.r * 1.8}px sans-serif`;
       ctx.fillText(e.emoji, e.x, e.y);
     });
 
-    // 爆発
     particles.forEach(p => {
       ctx.fillStyle = p.color;
       ctx.globalAlpha = p.life / 20;
