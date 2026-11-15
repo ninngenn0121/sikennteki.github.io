@@ -52,7 +52,7 @@ body{background:#12121e;color:#fff;font-family:sans-serif;display:flex;align-ite
   <button id="btn" type="button">長押しで落書きする！</button>
   <div id="ov">
     <h2 id="ot">いたずらステルス 3号</h2>
-    <p id="od">レベルが上がると落書きが慎重になる！<br>「❗」が出たら指を離せ！<br><b>LV.5からは周りの人の視線（👁️）にも注意！</b></p>
+    <p id="od">レベルが上がると落書きが慎重になる！<br>「❗」が出たら指を離せ！<br><b>LV.5で1人、LV.15で2人の通行人が出現！</b></p>
     <button id="go" type="button">ゲームスタート</button>
   </div>
 </div>
@@ -66,7 +66,7 @@ const up=()=>{if(!play)return;if(act&&st==="W"){const b=100+lv*30;sc+=b;$("sc").
 $("btn").onmousedown=dn;window.onmouseup=up;$("btn").addEventListener("touchstart",dn,{passive:false});window.ontouchend=up;
 
 function crd(s){
-  if(!play||lv<5)return;
+  if(!play||(s==="L"&&lv<5)||(s==="R"&&lv<15))return;
   const el=$(s==="L"?"cL":"cR"),ic=s==="L"?"📱":"📖";
   const set=w=>{
     if(!play)return;if(s==="L")wL=w;else wR=w;
@@ -87,8 +87,18 @@ function setSt(s){
 
 function end(win,rs=""){
   play=0;act=0;$("btn").classList.remove("on");clearTimeout(t0);clearTimeout(tL);clearTimeout(tR);
-  if(win){bp(587,"sine",.1,.06);setTimeout(()=>bp(880,"sine",.2,.06),100);$("tgt").textContent="🤡";$("alt").textContent="🎉";const tb=Math.floor(tm*30);sc+=lv*150+tb;$("sc").textContent=sc;$("ot").textContent=`LV.${lv} クリア！`;$("od").innerHTML=`アート完成！ボーナス <b>+${tb}</b><br>スコア: <b>${sc}</b>${lv===4?"<br><b style='color:#ffcc00'>⚠️ 次から周りの人間が出現！</b>":""}`;lv++;$("go").textContent=`レベル ${lv} へ`}
-  else{$("box").classList.remove("shake");void $("box").offsetWidth;$("box").classList.add("shake");bp(110,"sawtooth",.4,.08);$("tgt").textContent="🤬";$("alt").textContent="💢";$("ot").textContent=rs||"バレた！！";$("od").innerHTML=`到達レベル: <b>LV.${lv}</b><br>最終スコア: <b>${sc}</b>`;lv=1;sc=0;$("go").textContent="最初からリベンジ"}
+  if(win){
+    bp(587,"sine",.1,.06);setTimeout(()=>bp(880,"sine",.2,.06),100);$("tgt").textContent="🤡";$("alt").textContent="🎉";
+    const tb=Math.floor(tm*30);sc+=lv*150+tb;$("sc").textContent=sc;$("ot").textContent=`LV.${lv} クリア！`;
+    const warn=lv===4?"<br><b style='color:#ffcc00'>⚠️ 次から通行人が1人出現！</b>":lv===14?"<br><b style='color:#ff4b6e'>⚠️ 次から通行人が2人に増加！</b>":"";
+    $("od").innerHTML=`アート完成！ボーナス <b>+${tb}</b><br>スコア: <b>${sc}</b>${warn}`;
+    lv++;$("go").textContent=`レベル ${lv} へ`;
+  }else{
+    $("box").classList.remove("shake");void $("box").offsetWidth;$("box").classList.add("shake");
+    bp(110,"sawtooth",.4,.08);$("tgt").textContent="🤬";$("alt").textContent="💢";
+    $("ot").textContent=rs||"バレた！！";$("od").innerHTML=`到達レベル: <b>LV.${lv}</b><br>最終スコア: <b>${sc}</b>`;
+    lv=1;sc=0;$("go").textContent="最初からリベンジ";
+  }
   $("ov").style.display="flex";
 }
 
@@ -97,7 +107,7 @@ function loop(now){
   if(tm<=0){$("tm").textContent="0.0";end(0,"時間切れ！！");return}$("tm").textContent=tm.toFixed(1);
   if(act){
     if(st==="A"){end(0,"本人にバレた！！");return}
-    if(lv>=5&&(wL===1||wR===1)){end(0,"周りの人に見つかった！！");return}
+    if((lv>=5&&wL===1)||(lv>=15&&wR===1)){end(0,"通行人に見つかった！！");return}
     const lvs=Math.max(.45,1-(lv-1)*.07),m=st==="W"?1.5:1;
     pg+=28*lvs*dt*m;sc+=Math.ceil(60*(1+lv*.15)*dt*m);$("sc").textContent=sc;
     if(++tk%6===0)bp(400+pg*4,"square",.03,.02);
@@ -108,7 +118,13 @@ function loop(now){
   requestAnimationFrame(loop);
 }
 
-$("go").onclick=()=>{pg=0;tm=Math.max(13,17-(lv-1)*.3);$("bar").style.width="0%";$("bt").textContent="進行度: 0%";dd.forEach(d=>d.style.opacity=0);$("lv").textContent=lv;$("sc").textContent=sc;$("tm").textContent=tm.toFixed(1);wL=0;wR=0;$("cL").style.opacity=lv>=5?1:0;$("cR").style.opacity=lv>=5?1:0;$("ov").style.display="none";play=1;act=0;last=performance.now();setSt("S");if(lv>=5){crd("L");crd("R")}requestAnimationFrame(loop)};
+$("go").onclick=()=>{
+  pg=0;tm=Math.max(13,17-(lv-1)*.3);$("bar").style.width="0%";$("bt").textContent="進行度: 0%";
+  dd.forEach(d=>d.style.opacity=0);$("lv").textContent=lv;$("sc").textContent=sc;$("tm").textContent=tm.toFixed(1);
+  wL=0;wR=0;$("cL").style.opacity=lv>=5?1:0;$("cR").style.opacity=lv>=15?1:0;
+  $("ov").style.display="none";play=1;act=0;last=performance.now();
+  setSt("S");if(lv>=5)crd("L");if(lv>=15)crd("R");requestAnimationFrame(loop);
+};
 </script>
 </body>
 </html>
